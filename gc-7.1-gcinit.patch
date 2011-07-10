@@ -1,0 +1,26 @@
+diff -up gc-7.1/thread_local_alloc.c.gcinit gc-7.1/thread_local_alloc.c
+--- gc-7.1/thread_local_alloc.c.gcinit	2007-10-24 19:22:37.000000000 -0500
++++ gc-7.1/thread_local_alloc.c	2008-10-15 07:13:45.000000000 -0500
+@@ -141,6 +141,9 @@ void * GC_malloc(size_t bytes)
+     void *result;
+     void **tiny_fl;
+ 
++    if (!GC_is_initialized)
++      GC_init();
++
+ #   if !defined(USE_PTHREAD_SPECIFIC) && !defined(USE_WIN32_SPECIFIC)
+       GC_key_t k = GC_thread_key;
+       if (EXPECT(0 == k, 0)) {
+diff -up gc-7.1/malloc.c.gcinit gc-7.1/malloc.c
+--- gc-7.1/malloc.c.gcinit	2008-03-10 00:33:41.000000000 -0500
++++ gc-7.1/malloc.c	2008-10-15 07:12:31.000000000 -0500
+@@ -263,6 +263,9 @@ void * GC_generic_malloc(size_t lb, int 
+     size_t lg;
+     DCL_LOCK_STATE;
+ 
++    if (!GC_is_initialized)
++	GC_init();
++
+     if(SMALL_OBJ(lb)) {
+ 	lg = GC_size_map[lb];
+ 	opp = (void **)&(GC_objfreelist[lg]);

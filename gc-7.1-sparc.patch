@@ -1,0 +1,41 @@
+diff -up gc-7.1/configure.sparc gc-7.1/configure
+--- gc-7.1/configure.sparc	2008-05-03 19:52:50.000000000 -0500
++++ gc-7.1/configure	2008-10-15 07:01:18.000000000 -0500
+@@ -6161,6 +6161,9 @@ _ACEOF
+  sparc-*-netbsd*)
+     machdep="mach_dep.lo sparc_netbsd_mach_dep.lo"
+     ;;
++ sparc*-*-linux*)
++    machdep="mach_dep.lo sparc_mach_dep.lo"
++    ;;
+  sparc-sun-solaris2.3)
+     machdep="mach_dep.lo sparc_mach_dep.lo"
+     cat >>confdefs.h <<\_ACEOF
+diff -up gc-7.1/configure.ac.sparc gc-7.1/configure.ac
+--- gc-7.1/configure.ac.sparc	2008-05-03 19:52:06.000000000 -0500
++++ gc-7.1/configure.ac	2008-10-15 07:01:18.000000000 -0500
+@@ -405,6 +405,9 @@ case "$host" in
+  sparc-*-netbsd*)
+     machdep="mach_dep.lo sparc_netbsd_mach_dep.lo"
+     ;;
++ sparc*-*-linux*)
++    machdep="mach_dep.lo sparc_mach_dep.lo"
++    ;;
+  sparc-sun-solaris2.3)
+     machdep="mach_dep.lo sparc_mach_dep.lo"
+     AC_DEFINE(SUNOS53_SHARED_LIB)
+diff -up gc-7.1/mach_dep.c.sparc gc-7.1/mach_dep.c
+--- gc-7.1/mach_dep.c.sparc	2007-08-13 16:49:11.000000000 -0500
++++ gc-7.1/mach_dep.c	2008-10-15 07:03:35.000000000 -0500
+@@ -175,9 +175,10 @@ void GC_with_callee_saves_pushed(void (*
+ #   if defined(HAVE_PUSH_REGS)
+       GC_push_regs();
+ #   elif defined(UNIX_LIKE) && !defined(DARWIN) && !defined(ARM32) && \
+-	 !defined(HURD)
++	 !defined(HURD) && !defined(SPARC)
+       /* Older versions of Darwin seem to lack getcontext(). */
+       /* ARM Linux often doesn't support a real getcontext(). */
++      /* SPARC 32bit Linux doesn't support getcontext(). */
+       ucontext_t ctxt;
+       if (getcontext(&ctxt) < 0)
+ 	ABORT ("Getcontext failed: Use another register retrieval method?");
